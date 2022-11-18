@@ -9,6 +9,7 @@ class Monster extends Model
     protected $table = 'monster';
 
     protected $fillable = [
+        'id',
         'name',
         'level',
         'heat',

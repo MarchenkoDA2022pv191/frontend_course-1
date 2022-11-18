@@ -14,7 +14,7 @@ class AddKeyToMonster extends Migration
     public function up()
     {
         Schema::table('monster', function (Blueprint $table) {
-            $table->foreignId('category_id');
+            $table->unsignedBigInteger('category_id')->nullable();
             $table->foreign('category_id')->references('id')->on('category')->onDelete('Cascade');
         });
     }

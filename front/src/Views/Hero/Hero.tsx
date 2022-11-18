@@ -1,4 +1,5 @@
 import {Link} from 'react-router-dom'
+import axios from 'axios';
 import internal from 'stream';
 import './Hero.css';
 import { useState } from 'react';
@@ -153,7 +154,7 @@ const Hero = () => {
 <div className="MainList">
     <div className = "TopPage">
         <div className = "Name">
-            <p style={{font: "20px", margin: "0px"}}>Имя персонажа: </p>
+            <p style={{fontSize: "20px", margin: "0px"}}>Имя персонажа: </p>
             <input type ="text" className = "NameField" value = {name}
             onChange={event => setName(event.target.value)}
             />
@@ -225,7 +226,7 @@ const Hero = () => {
                 </div>
 
                 <div className = "Param" id="physique">
-                    <p className ="Name" ><b>Телос<br/>ложение</b></p>
+                    <p className ="Name"  style={{height:"40px"}}><b>Телос<br/>ложение</b></p>
                     <textarea value={params['physique']}
                         onChange={event => setParams(new Params( params['strength'], params['dexterity'], Number(event.target.value),
                                     params['intelligence'], params['wisdom'], params['charisma']))} 

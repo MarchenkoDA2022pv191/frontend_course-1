@@ -151,10 +151,12 @@
 }
 
 .Parametrs .Param .Name{
+    height: 20px;
     font-size:19px;
     margin: 0px;
     padding:0px;
     line-height: 1;
+    margin: auto;
 }
 
 .Parametrs .Param textarea{

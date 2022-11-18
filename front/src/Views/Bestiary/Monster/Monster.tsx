@@ -1,8 +1,68 @@
 import './Monster.css';
 import Select from 'react-select';
+import {useParams} from 'react-router-dom';
+import axios from 'axios';
+import { useState } from 'react';
+import React from 'react';
+
+type MonsterItem = {
+    name: string,
+    level: string,
+    streight: number,
+    dexterity: number,
+    physique: number,
+    intelligence: number,
+    wisdom: number,
+    charisma: number,
+    description: string,
+    image: string,
+    category_id:number
+}
+
+type Category = {
+    name: string
+}
 
 
 const Monster = () => {
+    const {id} =useParams();
+    const [monsterItem, setMonsterItem] = useState<MonsterItem>(
+        {
+            name: "",
+            level: "",
+            streight: 1,
+            dexterity: 1,
+            physique: 1,
+            intelligence: 1,
+            wisdom: 1,
+            charisma: 1,
+            description: "",
+            image: "",
+            category_id:0
+        }
+    );
+    const [category, setCategory] = useState<string>("");
+
+    const getMonster = () => {
+        axios.get<MonsterItem>('http://localhost/api/monsters/info/'+id).then(({data})=> {
+                axios.get<Category>('http://localhost/api/category/info/'+data.category_id.toString()).then(({data})=> {
+                    setCategory(data.name);
+                })
+                 setMonsterItem(data);
+            });
+    }
+
+    React.useEffect(getMonster);
+    
+    function getParamBonus(num:number):string{
+        let bonusString = "";
+        let buff = Math.floor(num/2) - 5;
+        if (buff>0){
+            bonusString += "+";
+        }
+        bonusString += buff.toString();
+        return bonusString;
+    }
 
     return (
         <main className="Main">
@@ -11,19 +71,13 @@ const Monster = () => {
                 <div className = "Name">
                     <p style={{fontSize: "20px", margin: "0px"}}>Имя персонажа: </p>
                     <div className = "NameField">
-                        <p>Гоблин</p>
+                        <p>{monsterItem?.name}</p>
                     </div>
                 </div>
                 <div className = "Race">
                     <p style={{fontSize: "20px", margin: "0px"}}>Раса: </p>
                     <div className = "NameField">
-                        <p>Гуманоид</p>
-                    </div>
-                </div>
-                <div className="WorldView">
-                    <p style={{fontSize: "20px", margin: "0px"}}>Мировозрение: </p>
-                    <div className = "NameField">
-                        <p>Хаотично-злой</p>
+                        <p>{category}</p>
                     </div>
                 </div>
             </div>
@@ -31,70 +85,70 @@ const Monster = () => {
             <div className="MainTable">
                 <div className = "ParametrTable">
                     <div className = "Bonus">
-                        <div className = "Count">
-                            3
+                        <div className = "Level">
+                            {monsterItem?.level}
                         </div>
             
                         <div className = "Name">
-                            Бонус мастерства
+                            Уровень<br/> угрозы
                         </div>
                     </div>
             
                     <div className="Parametrs">
                         <div className = "Param">
                             <p style={{fontSize: "20px", margin: "0px"}}><b>Сила</b></p>
-                                    <p style={{fontSize:"35px", textAlign: "center", margin: "0px"}}><b>16</b></p>
+                                    <p style={{fontSize:"35px", textAlign: "center", margin: "0px"}}><b>{monsterItem?.streight}</b></p>
                             <div className="Bonus">
-                                <p style = {{fontSize:"30px", textAlign: "center", margin: "auto"}}>+3</p>
+                                <p style = {{fontSize:"30px", textAlign: "center", margin: "auto"}}>{getParamBonus(monsterItem.streight)}</p>
                             </div>
                         </div>
             
                         <div className = "Param">
                             <p style={{fontSize: "20px", margin: "0px"}}><b>Ловкость</b></p>
-                                <p style={{fontSize:"35px", textAlign: "center", margin: "0px"}}><b>12</b></p>
+                                <p style={{fontSize:"35px", textAlign: "center", margin: "0px"}}><b>{monsterItem.dexterity}</b></p>
                             <div className="Bonus">
-                                <p style = {{fontSize:"30px", textAlign: "center", margin: "auto"}}>+1</p>
+                                <p style = {{fontSize:"30px", textAlign: "center", margin: "auto"}}>{getParamBonus(monsterItem.dexterity)}</p>
                             </div>
                         </div>
             
                         <div className = "Param">
                             <p style={{fontSize:"20px", margin: "0px", textAlign: "center"}}><b>Телос<br/>ложение</b></p>
-                            <p style={{fontSize:"35px", textAlign: "center", marginTop: "-20px",  marginBottom: "0px"}}><b>18</b></p>
+                            <p style={{fontSize:"35px", textAlign: "center", marginTop: "-10px",  marginBottom: "0px"}}><b>{monsterItem.physique}</b></p>
                             <div className="Bonus">
-                                <p style = {{fontSize:"30px", textAlign: "center", margin: "auto"}}>+4</p>
+                                <p style = {{fontSize:"30px", textAlign: "center", margin: "auto"}}>{getParamBonus(monsterItem.physique)}</p>
                             </div>
                         </div>
             
                         <div className = "Param">
                             <p style={{fontSize:"19px", margin: "0px"}}><b>Интеллект</b></p>
-                            <p style={{fontSize:"35px", textAlign: "center", margin: "0px"}}><b>14</b></p>
+                            <p style={{fontSize:"35px", textAlign: "center", margin: "0px"}}><b>{monsterItem.intelligence}</b></p>
                             <div className="Bonus">
-                                <p style = {{fontSize:"30px", textAlign: "center", margin: "auto"}}>+2</p>
+                                <p style = {{fontSize:"30px", textAlign: "center", margin: "auto"}}>{getParamBonus(monsterItem.intelligence)}</p>
                             </div>
                         </div>
             
                         <div className = "Param">
                             <p style={{fontSize:"20px", margin: "0px"}}><b>Мудрость</b></p>
-                            <p style={{fontSize:"35px", textAlign: "center",  margin: "0px"}}><b>10</b></p>
+                            <p style={{fontSize:"35px", textAlign: "center",  margin: "0px"}}><b>{monsterItem.wisdom}</b></p>
                             <div className="Bonus">
-                                <p style = {{fontSize:"30px", textAlign: "center", margin: "auto"}}>0</p>
+                                <p style = {{fontSize:"30px", textAlign: "center", margin: "auto"}}>{getParamBonus(monsterItem.wisdom)}</p>
                             </div>
                         </div>
             
                         <div className = "Param">
                             <p style={{fontSize:"20px", margin: "0px"}}><b>Харизма</b></p>
-                            <p style={{fontSize:"35px", textAlign: "center",  margin: "0px"}}><b>20</b></p>
+                            <p style={{fontSize:"35px", textAlign: "center",  margin: "0px"}}><b>{monsterItem.charisma}</b></p>
                             <div className="Bonus">
-                            <p style = {{fontSize:"30px", textAlign: "center", margin: "auto"}}>+5</p>
+                            <p style = {{fontSize:"30px", textAlign: "center", margin: "auto"}}>{getParamBonus(monsterItem.charisma)}</p>
                             </div>
                         </div>
                     </div>
                 </div>
         
                 <div className = "CenterLayout">
-                    <p style={{textAlign:"center", margin: "0"}}><img src="https://i.pinimg.com/originals/ca/54/96/ca5496b0fb8d28148f1ebdbad180bfdb.png" /></p>
+                    <img style = {{width:"100%", height: "50%"}} src={monsterItem.image} />
                     <div  style= {{fontSize: "16px"}}>
-                        Туп, жаден, струслив. Характер отсутствует. Почти как Трелони, только у Трелони была картина.
+                        {monsterItem?.description}
                     </div>
                 </div>
             </div>

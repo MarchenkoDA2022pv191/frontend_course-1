@@ -11,6 +11,7 @@ type Props = {
 const Product:React.FC<Props> = ({img, name}) =>  {
   return (
   <div className ="product">
+    
   <div>
       <img src={img}/>
   </div>

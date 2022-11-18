@@ -1,19 +1,55 @@
 import './Bestiary.css';
+import axios from 'axios';
+import React from 'react';
 import {Link} from 'react-router-dom';
 import Select from 'react-select';
-
+import { useState } from 'react';
 import {ProductView} from './Product';
+import { Monster } from './Monster';
+
+type Category = {
+    id: number,
+    name: string
+  }
+
+type SelectItem = {
+    value: string,
+    label: string
+}
+
+type MonsterItem = {
+    id:number,
+    name: string,
+    image: string
+}
+
 
 const Bestiary = () => {
 
-    const optionsCategory = [
-        {value: "1", label: "Звери"},
-        {value: "2", label: "Гуманоиды"},
-        {value: "3", label: "Монстры"},
-        {value: "4", label: "Исчадия"},
-        {value: "5", label: "Небожители"},
-        {value: "6", label: "Феи"}
-    ]
+
+
+    const [monsterItems, setMonsterItems] = useState<MonsterItem[]>([]);
+    const [optionsCategory, setCategery] = useState<SelectItem[]>([])
+
+    const getCategory = () => {
+        axios.get<Category[]>('http://localhost/api/category/list').then(({data})=> {
+            const category:SelectItem[] = []
+            for (let item of data){
+                category.push({value: item.id.toString(), label: item.name});
+            }
+            setCategery(category);
+          })
+      }
+    
+    const getMonsters = () => {
+        axios.get<MonsterItem []>('http://localhost/api/monsters/list').then(({data})=> {
+            setMonsterItems(data);
+        })
+    }
+    
+
+    React.useEffect(getCategory);
+    React.useEffect(getMonsters);
 
     const optionsLevel = [
         {value: "1", label: "1"},
@@ -57,7 +93,7 @@ const Bestiary = () => {
 
             <div className="MainList">
                 <div className = "TopPage">
-                    <div className="category">
+                    <div className="category" style = {{width: '300px'}}>
                         <p style={{fontSize: "20px", margin: "0px"}}>Категория: </p>
                         <Select
                             options={optionsCategory} 
@@ -65,26 +101,23 @@ const Bestiary = () => {
                             placeholder = "Выбрать категорию"
                         />
                     </div>
-                    <div className="category">
+                    <div className="category" style = {{width: '300px'}}>
                         <p style={{fontSize: "20px", margin: "0px"}}>Уровень(угрозы): </p>
                         <Select
                             options={optionsLevel} 
                             isMulti
-                            placeholder = "Выбрать категорию"
+                            placeholder = "Выбрать уровень"
                         />
                     </div>
-                    <input type="text" className="search" value="Гоблин" />
+                    <input type="text" className="search" />
                 </div>
 
+                {monsterItems.length}
                 <section className="products-list">
-                    <Link to='/monster'><ProductView img = 'https://i.pinimg.com/originals/ca/54/96/ca5496b0fb8d28148f1ebdbad180bfdb.png' name = "Гоблин"/> </Link>
-                    <Link to='/monster'><ProductView img = 'https://i.pinimg.com/originals/ca/54/96/ca5496b0fb8d28148f1ebdbad180bfdb.png' name = "Гоблин"/> </Link>
-                    <Link to='/monster'><ProductView img = 'https://i.pinimg.com/originals/ca/54/96/ca5496b0fb8d28148f1ebdbad180bfdb.png' name = "Гоблин"/> </Link>
-                    <Link to='/monster'><ProductView img = 'https://i.pinimg.com/originals/ca/54/96/ca5496b0fb8d28148f1ebdbad180bfdb.png' name = "Гоблин"/> </Link>
-                    <Link to='/monster'><ProductView img = 'https://i.pinimg.com/originals/ca/54/96/ca5496b0fb8d28148f1ebdbad180bfdb.png' name = "Гоблин"/> </Link>
-                    <Link to='/monster'><ProductView img = 'https://i.pinimg.com/originals/ca/54/96/ca5496b0fb8d28148f1ebdbad180bfdb.png' name = "Гоблин"/> </Link>
-                    <Link to='/monster'><ProductView img = 'https://i.pinimg.com/originals/ca/54/96/ca5496b0fb8d28148f1ebdbad180bfdb.png' name = "Гоблин"/> </Link>
-                    <Link to='/monster'><ProductView img = 'https://i.pinimg.com/originals/ca/54/96/ca5496b0fb8d28148f1ebdbad180bfdb.png' name = "Гоблин"/> </Link>
+                    {monsterItems.map(item =>
+                        <Link to={'/monster/' + item.id.toString()}><ProductView img = {item.image} name = {item.name}/> </Link>
+                    )}
+
                 </section>
 
             </div>
@@ -94,3 +127,6 @@ const Bestiary = () => {
 }
 
 export default Bestiary;
+
+//<Link to='/monster'><ProductView img = 'https://i.pinimg.com/originals/ca/54/96/ca5496b0fb8d28148f1ebdbad180bfdb.png' name = "Гоблин"/> </Link>
+

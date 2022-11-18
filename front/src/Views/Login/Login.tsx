@@ -3,7 +3,11 @@ import internal from 'stream';
 import './Login.css';
 import { useState } from 'react';
 
-const Login = () => {
+type Props = {
+    setName: (name: string) => void
+  }
+  
+const Login:React.FC<Props> = ({setName}) => {
 
     const navigate = useNavigate();
 
