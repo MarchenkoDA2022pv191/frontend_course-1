@@ -1,11 +1,10 @@
 import './Bestiary.css';
 import axios from 'axios';
 import React from 'react';
-import {Link} from 'react-router-dom';
+import {Link, useNavigate, useSearchParams, useLocation} from 'react-router-dom';
 import Select from 'react-select';
 import { useState } from 'react';
 import {ProductView} from './Product';
-import { Monster } from './Monster';
 
 type Category = {
     id: number,
@@ -20,16 +19,22 @@ type SelectItem = {
 type MonsterItem = {
     id:number,
     name: string,
-    image: string
+    image: string,
+    category_id: number,
+    level_id: number
+}
+
+type Level = {
+    id:number,
+    value:number
 }
 
 
 const Bestiary = () => {
 
-
-
     const [monsterItems, setMonsterItems] = useState<MonsterItem[]>([]);
-    const [optionsCategory, setCategery] = useState<SelectItem[]>([])
+    const [optionsCategory, setCategory] = useState<SelectItem[]>([])
+    const [optionsLevel, setLevels] = useState<SelectItem[]>([]);
 
     const getCategory = () => {
         axios.get<Category[]>('http://localhost/api/category/list').then(({data})=> {
@@ -37,7 +42,17 @@ const Bestiary = () => {
             for (let item of data){
                 category.push({value: item.id.toString(), label: item.name});
             }
-            setCategery(category);
+            setCategory(category);
+          })
+      }
+
+      const getLevel = () => {
+        axios.get<Level[]>('http://localhost/api/level/list').then(({data})=> {
+            const levels:SelectItem[] = []
+            for (let item of data){
+                levels.push({value: item.id.toString(), label: item.value.toString()});
+            }
+            setLevels(levels);
           })
       }
     
@@ -48,21 +63,29 @@ const Bestiary = () => {
     }
     
 
-    React.useEffect(getCategory);
-    React.useEffect(getMonsters);
+    React.useEffect(getCategory,[]);
+    React.useEffect(getMonsters,[]);
+    React.useEffect(getLevel,[]);
 
-    const optionsLevel = [
-        {value: "1", label: "1"},
-        {value: "2", label: "2"},
-        {value: "3", label: "3"},
-        {value: "4", label: "4"},
-        {value: "5", label: "5"},
-        {value: "6", label: "6"},
-        {value: "7", label: "7"},
-        {value: "8", label: "8"},
-        {value: "9", label: "9"},
-        {value: "10", label: "10"}
-    ]
+
+    const navigate = useNavigate();
+    const location = useLocation();
+    let [searchParams, setSearchParams] = useSearchParams();
+
+    const [searchName, setSearcName] = useState(searchParams.get('name')|| '');
+    const [selectedCategory,setSelectedCategory] = useState(searchParams.getAll('categorys'||[]));
+    const [selectedLevel,setSelectedLevel] = useState(searchParams.getAll('level'||[]));
+
+
+    const getSearch = (e:any) => {
+        const searchParam = {
+            name: searchName,
+            categorys: selectedCategory,
+            levels: selectedLevel
+        }
+        setSearchParams(searchParam);
+    }
+
 
     return (
         <main className="Main">
@@ -97,24 +120,69 @@ const Bestiary = () => {
                         <p style={{fontSize: "20px", margin: "0px"}}>Категория: </p>
                         <Select
                             options={optionsCategory} 
+                            value = {optionsCategory.filter(item=> selectedCategory.includes(item.value)===true)}
                             isMulti
                             placeholder = "Выбрать категорию"
+                            onChange={
+                                event =>{
+                                    const valueArr= event.map(item => item.value);
+                                    setSelectedCategory(valueArr);
+                                    setSearchParams({name: searchName, categorys: valueArr, levels: selectedLevel});
+                                }
+                            }
                         />
                     </div>
                     <div className="category" style = {{width: '300px'}}>
                         <p style={{fontSize: "20px", margin: "0px"}}>Уровень(угрозы): </p>
                         <Select
                             options={optionsLevel} 
+                            value = {optionsLevel.filter(item=> selectedLevel.includes(item.value)===true)}
                             isMulti
                             placeholder = "Выбрать уровень"
+                            onChange={
+                                event =>{
+                                    const valueArr= event.map(item => item.value);
+                                    setSelectedLevel(valueArr);
+                                    setSearchParams({name: searchName, categorys: selectedCategory, levels: valueArr});
+                                }
+                            }
                         />
                     </div>
-                    <input type="text" className="search" />
+                    <input type="search" className="search" value= {searchName} onChange={
+                        event => {
+                            event.preventDefault();
+                            setSearcName(event.target.value);
+                            const name = event.target.value;
+                            if (name!==""){
+                                setSearchParams({name: event.target.value, categorys: selectedCategory, levels: selectedLevel});
+                            }
+                            else{
+                                setSearchParams({categorys: selectedCategory, levels: selectedLevel});
+                            }
+                            
+                        }
+                    } />
                 </div>
 
-                {monsterItems.length}
                 <section className="products-list">
-                    {monsterItems.map(item =>
+                    {monsterItems.filter(
+                        item => {
+                            const name = searchParams.get('name')|| '';
+                            const categorys = searchParams.getAll('categorys')||[];
+                            const levels = searchParams.getAll('levels')||[];
+                            if (!item.name.includes(name!!)){
+                                return false;
+                            }
+                            if (categorys.length !== 0 && !(categorys.includes(item.category_id.toString()))){
+                                return false;
+                            }
+                            if (levels.length !== 0 && !(levels.includes(item.level_id.toString()))){
+                                return false;
+                            }
+                            return true;
+                            
+                        }
+                    ).map(item =>
                         <Link to={'/monster/' + item.id.toString()}><ProductView img = {item.image} name = {item.name}/> </Link>
                     )}
 
@@ -127,6 +195,4 @@ const Bestiary = () => {
 }
 
 export default Bestiary;
-
-//<Link to='/monster'><ProductView img = 'https://i.pinimg.com/originals/ca/54/96/ca5496b0fb8d28148f1ebdbad180bfdb.png' name = "Гоблин"/> </Link>
 

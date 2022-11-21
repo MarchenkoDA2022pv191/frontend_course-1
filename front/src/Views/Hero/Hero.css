@@ -100,7 +100,7 @@
 
 }
 
-.Bonus{
+.BonusHero{
     display: flex;
     flex-direction: row;
     width: 100%;
@@ -108,7 +108,7 @@
 }
 
 
-.Bonus .Count{
+.BonusHero .Count{
     width: 20%;
     height: 100%;
     background-color: white;
@@ -119,7 +119,7 @@
     
 }
 
-.Bonus .Name{
+.BonusHero .Name{
     margin-top: 2px;
     width: 80%;
     height: 100%;
@@ -150,13 +150,12 @@
     margin-bottom: 40px;
 }
 
-.Parametrs .Param .Name{
+.Parametrs .Param .NameP{
     height: 20px;
     font-size:19px;
     margin: 0px;
     padding:0px;
     line-height: 1;
-    margin: auto;
 }
 
 .Parametrs .Param textarea{
@@ -197,16 +196,16 @@
 }
 
 .CenterLayout img{
-    max-width: 100%;
-    max-height: 50%;
+    width: 100%;
+    height: 50%;
     -o-object-fit: cover;
     object-fit: cover;
     object-position: center;
     border: 2px solid black;
 }
 
-.CenterLayout div{
-    height: 540px;
+.CenterLayout .heroDescripton{
+    height: 44%;
     background: white;
     border: 2px solid black;
     margin: 0;

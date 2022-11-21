@@ -4,6 +4,8 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -20,7 +22,7 @@ class UserController extends Controller
             $user = Auth::user();
             return $user;
         }
-
+        throw new NotFoundHttpException('Неверный логин и пароль');
        
     }
 
@@ -33,11 +35,23 @@ class UserController extends Controller
 
         // проверка авторизованного пользователя
         if (Auth::attempt(['email' => $email])) {
-            throw new NotFoundHttpException('Аккаунт с такой почтой уже есть');
+            throw new NotFoundHttpException("aboba");
         }
-
-        DB::table('users')->insertGetId(['name'=> $name, 'email' => $email, 'password' => $password ]);
-
+        else{
+            User::create([
+                'name' => $name,
+                'email' => $email,
+                'password' => Hash::make($password),
+            ]);
+            if (Auth::attempt(['email' => $email, 'password' => $password])) {
+                $user = Auth::user();
+                return $user;
+            }
+            else{
+                $user = Auth::user();
+                return $user;
+            }
+        }
     }
 }
 

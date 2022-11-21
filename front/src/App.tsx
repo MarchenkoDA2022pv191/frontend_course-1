@@ -1,7 +1,4 @@
 import React from 'react';
-
-import axios from 'axios';
-
 import {Header} from './components/App/Header'
 import { Footer } from './components/App/Footer';
 import {Hero} from './Views/Hero';
@@ -11,18 +8,29 @@ import {Monster} from './Views/Bestiary/Monster';
 import { Registration } from './Views/Registration';
 import { useState } from 'react';
 import './App.css';
-
 import {Routes, Route, BrowserRouter} from 'react-router-dom'
-
-import styles from './App.module.scss'
 
 
 const App = () => {
 
-  const [userName, setUserName] = useState("Пользователь");
+  const [userName, setUserName] = useState<string|null>("Пользователь");
+  const rememberMe = localStorage.getItem('rememberMe') === 'true';
+
+  const updateName = () => {
+    if (rememberMe)
+    {
+      setUserName(localStorage.getItem('userName'));
+    }
+  }
+
+
   const setName = (name:string) => {
     setUserName(name);
   }
+
+  React.useEffect(updateName);
+
+
 
   return (
       <BrowserRouter>
@@ -30,13 +38,13 @@ const App = () => {
         <div className="Body">
           <Header/>
           <Routes>
-            <Route path="/" element = {<Hero/>}/>
-            <Route path='/bestiary' element = {<Bestiary/>} />
-            <Route path = '/login' element = {<Login setName={setName}/>}/>
+            <Route path="/hero" element = {<Hero/>}/>
+            <Route path='/' element = {<Bestiary/>} />
+            <Route path = '/login' element = {<Login setNickName={setName}/>}/>
             <Route path='/autorisation' element = {<Registration setNickName={setName}/>}/>
             <Route path='/monster/:id' element = {<Monster />}/>
           </Routes>
-          <Footer/>
+          <Footer nickName = {userName}/>
         </div>
       </body>
       </BrowserRouter>

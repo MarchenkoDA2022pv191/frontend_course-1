@@ -11,7 +11,6 @@ class Monster extends Model
     protected $fillable = [
         'id',
         'name',
-        'level',
         'heat',
         'armor',
         'streight',
@@ -21,6 +20,8 @@ class Monster extends Model
         'wisdom',
         'charisma',
         'description',
-        'image'
+        'image',
+        'category_id',
+        'level_id'
     ];
 }

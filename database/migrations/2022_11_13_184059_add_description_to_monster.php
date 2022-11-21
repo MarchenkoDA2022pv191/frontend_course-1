@@ -15,8 +15,8 @@ class AddDescriptionToMonster extends Migration
     {
         Schema::table('monster', function (Blueprint $table) {
             $table -> string("description",2500)->default("")->after('charisma')->comment("Описание");
-            $table -> decimal("armor", 2, 0, true) -> default(0) -> after('level')->comment("Броня");
-            $table -> decimal("heat", 3, 0, true) -> default(1) -> after('level')->comment("Здоровье");
+            $table -> decimal("armor", 2, 0, true) -> default(0) -> after('name')->comment("Броня");
+            $table -> decimal("heat", 3, 0, true) -> default(1) -> after('name')->comment("Здоровье");
         });
     }
 

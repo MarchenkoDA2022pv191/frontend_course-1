@@ -7,8 +7,7 @@ import React from 'react';
 
 type MonsterItem = {
     name: string,
-    level: string,
-    streight: number,
+    strenght: number,
     dexterity: number,
     physique: number,
     intelligence: number,
@@ -16,11 +15,16 @@ type MonsterItem = {
     charisma: number,
     description: string,
     image: string,
-    category_id:number
+    category_id:number,
+    level_id: number
 }
 
 type Category = {
     name: string
+}
+
+type Level ={
+    value: string;
 }
 
 
@@ -29,8 +33,7 @@ const Monster = () => {
     const [monsterItem, setMonsterItem] = useState<MonsterItem>(
         {
             name: "",
-            level: "",
-            streight: 1,
+            strenght: 1,
             dexterity: 1,
             physique: 1,
             intelligence: 1,
@@ -38,21 +41,26 @@ const Monster = () => {
             charisma: 1,
             description: "",
             image: "",
-            category_id:0
+            category_id:0,
+            level_id: 0
         }
     );
     const [category, setCategory] = useState<string>("");
+    const [level, setLevel] = useState<number>(0);
 
     const getMonster = () => {
         axios.get<MonsterItem>('http://localhost/api/monsters/info/'+id).then(({data})=> {
                 axios.get<Category>('http://localhost/api/category/info/'+data.category_id.toString()).then(({data})=> {
                     setCategory(data.name);
-                })
+                });
+                axios.get<Level>('http://localhost/api/level/info/'+data.level_id.toString()).then(({data})=>{
+                    setLevel(Number(data.value));
+                });
                  setMonsterItem(data);
             });
     }
 
-    React.useEffect(getMonster);
+    React.useEffect(getMonster,[]);
     
     function getParamBonus(num:number):string{
         let bonusString = "";
@@ -86,10 +94,10 @@ const Monster = () => {
                 <div className = "ParametrTable">
                     <div className = "Bonus">
                         <div className = "Level">
-                            {monsterItem?.level}
+                            {level}
                         </div>
             
-                        <div className = "Name">
+                        <div className = "levelName">
                             Уровень<br/> угрозы
                         </div>
                     </div>
@@ -97,9 +105,9 @@ const Monster = () => {
                     <div className="Parametrs">
                         <div className = "Param">
                             <p style={{fontSize: "20px", margin: "0px"}}><b>Сила</b></p>
-                                    <p style={{fontSize:"35px", textAlign: "center", margin: "0px"}}><b>{monsterItem?.streight}</b></p>
+                                    <p style={{fontSize:"35px", textAlign: "center", margin: "0px"}}><b>{monsterItem?.strenght}</b></p>
                             <div className="Bonus">
-                                <p style = {{fontSize:"30px", textAlign: "center", margin: "auto"}}>{getParamBonus(monsterItem.streight)}</p>
+                                <p style = {{fontSize:"30px", textAlign: "center", margin: "auto"}}>{getParamBonus(monsterItem.strenght)}</p>
                             </div>
                         </div>
             
@@ -112,7 +120,7 @@ const Monster = () => {
                         </div>
             
                         <div className = "Param">
-                            <p style={{fontSize:"20px", margin: "0px", textAlign: "center"}}><b>Телос<br/>ложение</b></p>
+                            <p style={{fontSize:"20px", margin: "0px", textAlign: "center", lineHeight: '1'}}><b>Телос<br/>ложение</b></p>
                             <p style={{fontSize:"35px", textAlign: "center", marginTop: "-10px",  marginBottom: "0px"}}><b>{monsterItem.physique}</b></p>
                             <div className="Bonus">
                                 <p style = {{fontSize:"30px", textAlign: "center", margin: "auto"}}>{getParamBonus(monsterItem.physique)}</p>
@@ -146,7 +154,7 @@ const Monster = () => {
                 </div>
         
                 <div className = "CenterLayout">
-                    <img style = {{width:"100%", height: "50%"}} src={monsterItem.image} />
+                    <img  src={monsterItem.image} />
                     <div  style= {{fontSize: "16px"}}>
                         {monsterItem?.description}
                     </div>
