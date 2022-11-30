@@ -14,16 +14,18 @@ class UserController extends Controller
 {
     public function login(Request $request)
     {
+        
         $email = $request->get('email');
         $password = $request->get('password');
+        $name = $request->bearerToken();
 
         // проверка авторизованного пользователя
         if (Auth::attempt(['email' => $email, 'password' => $password])) {
-            $user = Auth::user();
-            return $user;
+            $token = $request->user()->createToken($name);
+            return ['token' => $token->plainTextToken, 'name' => $request->user()['name']];
         }
         throw new NotFoundHttpException('Неверный логин и пароль');
-       
+
     }
 
 
@@ -44,14 +46,18 @@ class UserController extends Controller
                 'password' => Hash::make($password),
             ]);
             if (Auth::attempt(['email' => $email, 'password' => $password])) {
-                $user = Auth::user();
-                return $user;
             }
-            else{
-                $user = Auth::user();
-                return $user;
-            }
+            $token = $request->user()->createToken($name);
+            return ['token' => $token->plainTextToken, 'name' => $request->user()['name']];
         }
+    }
+
+    public function logout($yourToken, Request $request)
+    {
+        $token = \Laravel\Sanctum\PersonalAccessToken::findToken($yourToken);
+        $user = $token->tokenable;
+        $user->tokens()->delete();
+       return "user logout";
     }
 }
 

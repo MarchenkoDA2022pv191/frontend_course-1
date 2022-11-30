@@ -22,7 +22,7 @@ const Hero = () => {
 
     const navigate = useNavigate();
     const checkUser = () => {
-        if (localStorage.getItem('rememberMe') !== 'true' || localStorage.getItem('userId') === null){
+        if (localStorage.getItem('token') === null){
             alert("Просматривать героя может только пользователь");
             navigate('/login');
         }
@@ -77,8 +77,8 @@ const Hero = () => {
 
     const getHero = () => {
 
-        axios.get<HeroParam>("http://localhost/api/hero/get/" + localStorage.getItem("userId")).then(({data}) => {
-            if (data !== null){
+        axios.get<HeroParam>("http://localhost/api/hero/get/" + localStorage.getItem("token")).then(({data}) => {
+                alert("AAAA");
                 setName(data.name);
                 setLevel(data.level);
                 setLevelBonus(getLevelBonus(data.level));
@@ -99,9 +99,7 @@ const Hero = () => {
                     charisma: params.charisma,
                     description: description,
                     image: image
-                };
-            }
-            
+                }; 
         }
     )}
 
@@ -141,7 +139,7 @@ const Hero = () => {
                 description: description,
                 image: image
             };
-            axios.post("http://localhost/api/hero/update/", {Hero: HeroSave, userID: localStorage.getItem("userId")});
+            axios.post("http://localhost/api/hero/update/" + localStorage.getItem("token"), {Hero: HeroSave, userID: localStorage.getItem("userId")});
 
             setLevelBonus(getLevelBonus(level));
             setParamBonus([getParamBonus(params['strength']), getParamBonus(params['dexterity']), getParamBonus(params['physique']),

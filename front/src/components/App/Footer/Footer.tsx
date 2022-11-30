@@ -1,15 +1,21 @@
 import {Link} from 'react-router-dom'
 import { useState } from 'react';
 import './Footer.css';
+import axios from 'axios';
 
 type Props = {
     nickName: string|null
   }
 
 function removeUser(){
-    localStorage.removeItem("userName");
-    localStorage.removeItem("rememberMe");
-    window.location.reload();
+    axios.post("http://localhost/api/user/logout/" + localStorage.getItem("token")).then(response => {
+        localStorage.removeItem("name");
+        localStorage.removeItem("token");
+        window.location.reload();
+    }).catch(
+        error => alert("Говно говна")
+    )
+    
 }
 
 const Footer:React.FC<Props> = ({nickName}) =>  {
@@ -20,7 +26,7 @@ const Footer:React.FC<Props> = ({nickName}) =>  {
                 <p className="User">Хорошей игры {nickName}.</p>
                 <img className="Usericon" src="https://w7.pngwing.com/pngs/944/770/png-transparent-computer-icons-login-google-account-internet-user.png"/>
             </div>
-            {localStorage.getItem('rememberMe') === 'true' ?
+            {localStorage.getItem('token') !== null ?
                 <div className='buttonPlace'>
                     <button onClick={removeUser} className="Menubutton">Выйти</button>
                 </div>

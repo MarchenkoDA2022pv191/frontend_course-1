@@ -7,7 +7,7 @@ import axios from 'axios';
 type Props = {
     setNickName: (name: string) => void
   }
-  
+
 const Login:React.FC<Props> = ({setNickName}) => {
 
     const navigate = useNavigate();
@@ -17,10 +17,9 @@ const Login:React.FC<Props> = ({setNickName}) => {
 
     function login(event: any){
         event.preventDefault();
-        axios.post("http://localhost/api/user/login", {email: email, password: password}).then(response => {
-            localStorage.setItem('rememberMe', "true");
-            localStorage.setItem('userName', response.data.name);
-            localStorage.setItem('userId', response.data.id);
+        axios.post("http://localhost/api/user/login", {email: email, password: password}, {headers: { Authorization: `Bearer ${email}` }}).then(response => {
+            localStorage.setItem('token', response.data.token);
+            localStorage.setItem('name', response.data.name);
             setNickName(response.data.name);
             navigate('/hero');
         }).catch(
@@ -28,7 +27,7 @@ const Login:React.FC<Props> = ({setNickName}) => {
         )
     }
 
-    
+
     return (
         <div className="login-form">
     <h1>Авторизация</h1>
@@ -36,8 +35,8 @@ const Login:React.FC<Props> = ({setNickName}) => {
     <form className="mt-4" method="post" onSubmit={login} >
     <div className="mb-4">
       <div><label>Email</label></div>
-      <div><input type="email" required className="w-100" name="email" 
-            onChange={event => setEmail(event.target.value)}/></div> 
+      <div><input type="email" required className="w-100" name="email"
+            onChange={event => setEmail(event.target.value)}/></div>
     </div>
     <div className="mb-4">
       <div><label>Пароль</label></div>

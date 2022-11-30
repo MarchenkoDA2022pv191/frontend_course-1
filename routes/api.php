@@ -26,12 +26,15 @@ Route::prefix('level')->group(function(){
 Route::prefix('user')->group(function () {
     Route::post('login', [UserController::class, 'login']);
     Route::post('registration', [UserController::class, 'addNewUser']);
+    Route::post('logout/{yourToken}', [UserController::class, 'logout']);
 });
 
 Route::prefix('hero')->group(function () {
-    Route::get('get/{user_id}', [HeroController::class, 'get']);
-    Route::post('update', [HeroController::class, 'updateUser']);
+    Route::get('get/{yourToken}', [HeroController::class, 'get']);
+    Route::post('update/{yourToken}', [HeroController::class, 'updateUser']);
 });
+
+
 
 
 

@@ -14,12 +14,12 @@ import {Routes, Route, BrowserRouter} from 'react-router-dom'
 const App = () => {
 
   const [userName, setUserName] = useState<string|null>("Пользователь");
-  const rememberMe = localStorage.getItem('rememberMe') === 'true';
+  const rememberMe = localStorage.getItem('token') !== null;
 
   const updateName = () => {
     if (rememberMe)
     {
-      setUserName(localStorage.getItem('userName'));
+      setUserName(localStorage.getItem('name'));
     }
   }
 
@@ -28,7 +28,7 @@ const App = () => {
     setUserName(name);
   }
 
-  React.useEffect(updateName);
+  React.useEffect(updateName,[]);
 
 
 
