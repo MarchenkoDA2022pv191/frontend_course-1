@@ -28,7 +28,7 @@ const Hero = () => {
         }
     }
 
-    React.useEffect(checkUser,[]);
+    React.useEffect(checkUser);
 
 
 
@@ -78,7 +78,6 @@ const Hero = () => {
     const getHero = () => {
 
         axios.get<HeroParam>("http://localhost/api/hero/get/" + localStorage.getItem("token")).then(({data}) => {
-                alert("AAAA");
                 setName(data.name);
                 setLevel(data.level);
                 setLevelBonus(getLevelBonus(data.level));
